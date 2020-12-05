@@ -43,22 +43,28 @@ func quit(g *gocui.Gui, v *gocui.View) error {
 	return gocui.ErrQuit
 }
 
-func createComponent(pingResult []*ping.Statistics, maxX int, maxY int) []gocui.Manager {
+func createComponent(pingResult []*ping.Statistics, errorTarget []string, maxX int, maxY int) []gocui.Manager {
 	var widgets []gocui.Manager
-	var text string
+	var successText string
+	var errorText string
 
 	for _, v := range pingResult {
-		text = fmt.Sprintf("Target: %v\n 1stRtts: %v\n 2ndRtts: %v\n 3rdRtts: %v\n MaxRtt: %v\n MinRtt: %v\n AvgRtt: %v\n StdDevRtt: %v",
+		successText = fmt.Sprintf("Target: %v\n 1stRtts: %v\n 2ndRtts: %v\n 3rdRtts: %v\n MaxRtt: %v\n MinRtt: %v\n AvgRtt: %v\n StdDevRtt: %v",
 			v.Addr, v.Rtts[0], v.Rtts[1], v.Rtts[2], v.MaxRtt, v.MinRtt, v.AvgRtt, v.StdDevRtt)
 
-		widgets = append(widgets, &Widget{v.Addr, text, 0, 0, maxX/len(pingResult) - 1, maxY - 1})
+		widgets = append(widgets, &Widget{v.Addr, successText, 0, 0, maxX/len(pingResult) - 1, maxY/2 + 3})
 	}
 	widgets = append(widgets, gocui.ManagerFunc(flowLayout))
+
+	for _, v := range errorTarget {
+		errorText += "Error: " + v + "\n"
+	}
+	widgets = append(widgets, &Widget{"Error", errorText, 0, maxY/2 + 4, maxX - 1, maxY - 1})
 
 	return widgets
 }
 
-func View(pingResult []*ping.Statistics) {
+func View(pingResult []*ping.Statistics, errorTarget []string) {
 	g, err := gocui.NewGui(gocui.OutputNormal)
 	if err != nil {
 		log.Panicln(err)
@@ -67,7 +73,7 @@ func View(pingResult []*ping.Statistics) {
 
 	maxX, maxY := g.Size()
 
-	component := createComponent(pingResult, maxX, maxY)
+	component := createComponent(pingResult, errorTarget, maxX, maxY)
 	g.SetManager(component...)
 
 	if err := g.SetKeybinding("", gocui.KeyCtrlC, gocui.ModNone, quit); err != nil {

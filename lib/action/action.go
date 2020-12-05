@@ -11,12 +11,14 @@ import (
 
 func Run(targets []string) {
 	var successTarget []string
+	var errorTarget []string
 	var wg sync.WaitGroup
 	var result []*ping.Statistics
 
 	for _, v := range targets {
 		_, err := exec.Command("host", v).Output()
 		if err != nil {
+			errorTarget = append(errorTarget, v)
 			continue
 		}
 		successTarget = append(successTarget, v)
@@ -31,5 +33,5 @@ func Run(targets []string) {
 	}
 	wg.Wait()
 
-	cui.View(result)
+	cui.View(result, errorTarget)
 }
