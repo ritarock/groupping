@@ -46,7 +46,7 @@ func quit(g *gocui.Gui, v *gocui.View) error {
 func createComponent(pingResult []*ping.Statistics, errorTarget []string, maxX int, maxY int) []gocui.Manager {
 	var widgets []gocui.Manager
 	var successText string
-	var errorText string
+	errorText := "Error Target\n"
 
 	for _, v := range pingResult {
 		successText = fmt.Sprintf("Target: %v\n 1stRtts: %v\n 2ndRtts: %v\n 3rdRtts: %v\n MaxRtt: %v\n MinRtt: %v\n AvgRtt: %v\n StdDevRtt: %v",
