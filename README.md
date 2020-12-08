@@ -13,7 +13,7 @@ NAME:
    grouping - Ping multiple targets
 
 USAGE:
-   main [global options] command [command options] [arguments...]
+   grouping [global options] command [command options] [arguments...]
 
 COMMANDS:
    help, h  Shows a list of commands or help for one command
